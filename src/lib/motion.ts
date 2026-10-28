@@ -3,6 +3,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useState } from 'react';
 
 gsap.registerPlugin(ScrollTrigger);
+// Sections render conditionally (e.g. reduced motion); missing targets are expected, not errors.
+gsap.config({ nullTargetWarn: false });
 export { gsap, ScrollTrigger };
 
 const QUERY = '(prefers-reduced-motion: reduce)';

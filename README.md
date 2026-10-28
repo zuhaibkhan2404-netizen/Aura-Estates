@@ -3,10 +3,22 @@
 A responsive luxury real-estate site with an interactive 3D showroom, a collection-to-detail
 camera transition, a short scroll-linked story and a validated viewing-enquiry form.
 
-**Everything here is demonstration content.** AUREL Estates is fictional; the residences, places,
-figures and images are samples. All images are concept renders generated from simplified
-procedural 3D models (see `tools/stills-entry.ts`). Nothing is presented as photography or as a
-verified listing, and the UI labels it that way.
+**Everything here is demonstration content.** AUREL Estates is fictional; residences, places and
+figures are samples. Photos are real architecture photography hot-linked from Unsplash (free
+Unsplash licence, photographer credited beside each image) — they show other buildings, not the
+listed properties, and the UI says so. Each photo has a local fallback in `public/assets/renders/`
+(concept renders) used if Unsplash is unreachable. Add `?local` to the URL to force the fallbacks.
+
+### v2 experience
+- Hero: real houses replace each other with clip-path wipes + push-in; headline pops word by word; autoplay with pause button.
+- Collection: WebGL arc of photo planes (`src/three/GalleryScene.ts`) — bend + RGB split on drag, the arriving house pops
+  (overshoot, zoom-out, ripple), click/Explore flies the photo to full screen with the detail panel.
+- Counters, split-text pops, image wipes and a circular-reveal story sequence (GSAP ScrollTrigger).
+
+### Replacing photos
+Each photo in `src/data/properties.ts` is `{ id, alt, caption, fallback, credit }`. `id` is the Unsplash photo id
+(the part after `photo-` in an images.unsplash.com URL). For your own photos, leave `id: ''` and set `fallback`
+to your file in `public/assets/...` — then remove the "illustrative photo" labels.
 
 ---
 

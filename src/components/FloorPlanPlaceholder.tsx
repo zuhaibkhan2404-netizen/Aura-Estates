@@ -1,4 +1,4 @@
-import type { ModelKind } from '../data/properties';
+import type { PlanKind as ModelKind } from '../data/properties';
 
 /** Abstract schematic used until an architect-supplied plan is added. Deliberately unlabelled with dimensions. */
 const plans: Record<ModelKind, { rooms: [number, number, number, number, string][]; w: number; h: number }> = {

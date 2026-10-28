@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { createPalette, type Palette } from './materials';
-import type { ModelKind } from '../data/properties';
+export type ModelKind = 'villa' | 'penthouse' | 'waterfront';
 
 /**
  * Procedural CONCEPT models. They are intentionally abstract, architectural-model style

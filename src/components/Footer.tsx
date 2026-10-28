@@ -17,9 +17,10 @@ export default function Footer() {
           </ul>
         </nav>
         <p className="site-footer__legal">
-          {brand.full} is a fictional brand created for demonstration. All residences, locations, figures and
-          images are sample content; images are concept renders generated from simplified 3D models. Nothing on
-          this site is an offer, valuation or verified listing.
+          {brand.full} is a fictional brand created for demonstration. All residences, locations and figures are
+          sample content. Photographs are by Unsplash contributors (credited beside each image, used under the
+          Unsplash licence) and show other buildings, not the listed properties. Nothing on this site is an offer,
+          valuation or verified listing.
         </p>
       </div>
     </footer>

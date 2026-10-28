@@ -4,11 +4,11 @@
  * Output images are CONCEPT RENDERS and are labelled as such throughout the site.
  */
 import * as THREE from 'three';
-import { Builder, addOliveTree, buildResidenceModel, seeded, type ResidenceModel } from '../src/three/models';
-import { configureRenderer, createEnvironment } from '../src/three/environment';
-import { createPalette, setInteriorGlow } from '../src/three/materials';
-import { createComposer } from '../src/three/postfx';
-import type { ModelKind } from '../src/data/properties';
+import { Builder, addOliveTree, buildResidenceModel, seeded, type ResidenceModel } from './concept/models';
+import { configureRenderer, createEnvironment } from './concept/environment';
+import { createPalette, setInteriorGlow } from './concept/materials';
+import { createComposer } from './concept/postfx';
+import type { ModelKind } from './concept/models';
 
 type V3 = [number, number, number];
 interface Preset {

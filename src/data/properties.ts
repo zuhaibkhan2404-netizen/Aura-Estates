@@ -1,72 +1,54 @@
 /**
  * AUREL Estates — central, editable site content.
  *
- * Everything a non-developer is likely to change lives in this one file:
- * residences, image paths, optional GLB models, story scenes, lifestyle copy
- * and the enquiry endpoint. All residences and places below are FICTIONAL
- * demonstration content. Replace them with verified data before publishing.
+ * Residences, prices, figures and place names are FICTIONAL demonstration content.
+ * Photos are real architecture photography from Unsplash (free licence, credited on the page);
+ * they are NOT photos of the listed properties. Replace them with the real property's
+ * approved photography before publishing a real listing.
  */
+import type { Photo } from '../lib/images';
 
-export type ModelKind = 'villa' | 'penthouse' | 'waterfront';
-
-export interface GalleryImage {
-  src: string;
-  alt: string;
-  /** Shown under the image. Keep "Concept render" until real photography is supplied. */
-  caption: string;
-}
+export type PlanKind = 'villa' | 'penthouse' | 'waterfront';
 
 export interface Residence {
   id: string;
   name: string;
   /** Fictional location label. Do not add travel times you cannot verify. */
   location: string;
-  /** One short line shown beside the 3D collection. */
+  /** One short line shown in the gallery. */
   descriptor: string;
-  type: 'Villa' | 'Penthouse' | 'Waterfront residence';
+  type: string;
   description: string[];
   bedrooms: number;
   bathrooms: number;
   /** Internal living area in square metres. Square feet is calculated. */
   interiorAreaM2: number;
-  /** Optional plot or terrace area in square metres. */
   outdoorAreaM2?: number;
   outdoorAreaLabel?: string;
   priceLabel: string;
   amenities: string[];
-  gallery: GalleryImage[];
-  /** Image used when WebGL is unavailable or the 3D scene is still loading. */
-  poster: string;
-  floorPlan: {
-    /** Path to an architect-supplied plan (SVG/PNG/PDF). Leave empty to show the placeholder schematic. */
-    src: string;
-    note: string;
-  };
-  model: {
-    /** Procedural concept model used when no GLB is supplied (or the GLB fails to load). */
-    procedural: ModelKind;
-    /** Optional path to a compressed .glb, e.g. 'assets/models/villa-solenne.glb'. */
-    glb?: string;
-    /** Height in scene units the GLB is normalised to (procedural models are ~6–9). */
-    glbTargetHeight?: number;
-    glbRotationY?: number;
-  };
+  /** First photo is the cover used in the 3D gallery and hero. */
+  photos: (Photo & { caption: string })[];
+  floorPlan: { src: string; note: string; kind: PlanKind };
+  /** Accent colour used for small UI details on this residence. */
+  accent: string;
   /** false until a human has checked every figure against a source document. */
   verified: boolean;
 }
 
 const R = 'assets/renders/';
+const credit = (name: string, slug: string) => ({ name, url: `https://unsplash.com/photos/${slug}` });
 
 export const residences: Residence[] = [
   {
     id: 'villa-solenne',
     name: 'Villa Solenne',
-    location: 'Serrana Hills',
-    descriptor: 'A cantilevered stone villa above terraced olive groves.',
+    location: 'Serrana Coast',
+    descriptor: 'A white villa composed around a long reflecting pool.',
     type: 'Villa',
     description: [
-      'Villa Solenne is composed as two horizontal planes: a heavy stone plinth anchored into the hillside and a lighter limestone volume that cantilevers over the pool terrace.',
-      'Living spaces open fully to the west terrace through floor-to-ceiling glazing, while bronze fins temper the afternoon light along the upper bedroom wing.',
+      'Villa Solenne is a sequence of white volumes arranged around a long pool terrace. Deep overhangs keep the living spaces shaded while the glazing opens fully to the garden.',
+      'The principal suite occupies the upper floor, with a private terrace above the pool and views over the coastline.',
     ],
     bedrooms: 5,
     bathrooms: 6,
@@ -74,67 +56,51 @@ export const residences: Residence[] = [
     outdoorAreaM2: 2400,
     outdoorAreaLabel: 'Plot',
     priceLabel: 'Price on application',
-    amenities: [
-      '22 m infinity-edge pool',
-      'Terraced olive grove',
-      'Temperature-controlled wine room',
-      'Detached guest pavilion',
-      'Private cinema',
-      'Two-car gallery garage',
+    amenities: ['22 m pool terrace', 'Outdoor lounge and kitchen', 'Temperature-controlled wine room', 'Guest pavilion', 'Private cinema', 'Two-car gallery garage'],
+    photos: [
+      { id: '1613977257363-707ba9348227', alt: 'A modern white villa with a swimming pool and an outdoor lounge area', caption: 'Pool terrace', fallback: `${R}villa-1.jpg`, credit: credit('John Fornander', 'Id7u0EkTjBE') },
+      { id: '1512917774080-9991f1c4c750', alt: 'White and grey modern house beside a swimming pool under a clear sky', caption: 'From the garden', fallback: `${R}villa-2.jpg`, credit: credit('Frames For Your Heart', '2d4lAQAlbDA') },
+      { id: '1613490493576-7fde63acd811', alt: 'White and brown modern house with large windows', caption: 'Evening', fallback: `${R}villa-3.jpg`, credit: credit('Avi Werde', 'hHz4yrvxwlA') },
     ],
-    gallery: [
-      { src: `${R}villa-1.jpg`, alt: 'Concept render of Villa Solenne from the pool terrace, stone plinth below a cantilevered limestone upper floor', caption: 'Concept render — pool terrace' },
-      { src: `${R}villa-2.jpg`, alt: 'Concept render of Villa Solenne seen from a low side angle, showing the cantilever and bronze fins', caption: 'Concept render — cantilever' },
-      { src: `${R}villa-3.jpg`, alt: 'Concept render of Villa Solenne at dusk with warm interior light', caption: 'Concept render — dusk' },
-    ],
-    poster: `${R}villa-1.jpg`,
-    floorPlan: { src: '', note: 'Ground floor — indicative schematic' },
-    model: { procedural: 'villa' },
+    floorPlan: { src: '', note: 'Ground floor — indicative schematic', kind: 'villa' },
+    accent: '#C9A97A',
     verified: false,
   },
   {
-    id: 'meridian-penthouse',
-    name: 'The Meridian Penthouse',
-    location: 'Harbour Quarter, Port Aurel',
-    descriptor: 'A full-floor crown residence with wraparound terraces.',
-    type: 'Penthouse',
+    id: 'casa-noctis',
+    name: 'Casa Noctis',
+    location: 'Valmora Ridge',
+    descriptor: 'A glass house that glows after dusk.',
+    type: 'Contemporary house',
     description: [
-      'The Meridian occupies the top two levels of a slender residential tower. Its upper floor steps back to create a continuous terrace on all four sides.',
-      'A bronze pergola shades the roof garden, and a private lift opens directly into the double-height living room.',
+      'Casa Noctis is designed for the evening. Full-height glazing wraps the living floor so that, after dark, the house reads as a lantern on the ridge.',
+      'A double-sided fireplace divides the living and dining spaces; every bedroom opens to its own terrace.',
     ],
     bedrooms: 4,
     bathrooms: 5,
-    interiorAreaM2: 485,
-    outdoorAreaM2: 310,
-    outdoorAreaLabel: 'Terraces',
+    interiorAreaM2: 520,
+    outdoorAreaM2: 1800,
+    outdoorAreaLabel: 'Plot',
     priceLabel: 'Price on application',
-    amenities: [
-      'Private lift lobby',
-      'Double-height living room',
-      'Wraparound terraces',
-      'Roof garden with pergola',
-      'Residents’ spa and pool',
-      'Concierge and valet',
+    amenities: ['Double-sided fireplace', 'Full-height sliding glazing', 'Landscape lighting', 'Home office', 'Gym and steam room', 'EV charging'],
+    photos: [
+      { id: '1757524492552-d47a66a2b63e', alt: 'Modern house with large windows at dusk', caption: 'At dusk', fallback: `${R}villa-3.jpg`, credit: credit('Michael Brown', 'cUoXTLVFQ9M') },
+      { id: '1757524503555-b62633f47670', alt: 'Modern living room with a fireplace and large windows', caption: 'Living room', fallback: `${R}story-living.jpg`, credit: credit('Michael Brown', 'FKOBTsfL4CY') },
+      { id: '1505843513577-22bb7d21e455', alt: 'White and black concrete house with lit windows', caption: 'Night', fallback: `${R}penthouse-3.jpg`, credit: credit('Daniel Barnes', 'RKdLlTyjm5g') },
     ],
-    gallery: [
-      { src: `${R}penthouse-1.jpg`, alt: 'Concept render of the Meridian tower crown with stepped terraces and bronze fins', caption: 'Concept render — the crown' },
-      { src: `${R}penthouse-2.jpg`, alt: 'Concept render looking up at the penthouse terraces and pergola', caption: 'Concept render — terraces' },
-      { src: `${R}penthouse-3.jpg`, alt: 'Concept render of the Meridian tower at dusk with lit upper floors', caption: 'Concept render — dusk' },
-    ],
-    poster: `${R}penthouse-1.jpg`,
-    floorPlan: { src: '', note: 'Upper level — indicative schematic' },
-    model: { procedural: 'penthouse' },
+    floorPlan: { src: '', note: 'Living level — indicative schematic', kind: 'penthouse' },
+    accent: '#E0A86A',
     verified: false,
   },
   {
     id: 'lakehouse-verena',
     name: 'Lakehouse Verena',
     location: 'Lake Verena shoreline',
-    descriptor: 'A low timber pavilion that extends over still water.',
+    descriptor: 'Golden hour, still water and a house that faces both.',
     type: 'Waterfront residence',
     description: [
-      'Lakehouse Verena is a single, long pavilion beneath a floating roof. A timber deck runs the full length of the house and continues out over the water as a private jetty.',
-      'A stone chimney anchors the plan; every principal room faces the lake through sliding glazed walls.',
+      'Lakehouse Verena sits low beside the water. A single long living room faces west, so the late sun reaches deep into the house.',
+      'A stone terrace steps down to the shoreline; the bedrooms are arranged in a quieter wing behind the courtyard.',
     ],
     bedrooms: 4,
     bathrooms: 4,
@@ -142,53 +108,93 @@ export const residences: Residence[] = [
     outdoorAreaM2: 1650,
     outdoorAreaLabel: 'Plot',
     priceLabel: 'Price on application',
-    amenities: [
-      'Private jetty and boathouse',
-      'Full-length lake deck',
-      'Stone fireplace lounge',
-      'Outdoor kitchen',
-      'Lakeside sauna',
-      'Reed garden',
+    amenities: ['Private shoreline', 'West-facing living room', 'Stone terrace to the water', 'Outdoor kitchen', 'Lakeside sauna', 'Boat storage'],
+    photos: [
+      { id: '1544984243-ec57ea16fe25', alt: 'Water near a house during golden hour', caption: 'Golden hour', fallback: `${R}lakehouse-1.jpg`, credit: credit('Roberto Nickson', 'so3wgJLwDxo') },
+      { id: '1564078516393-cf04bd966897', alt: 'Grey padded chaise couch beside a large window', caption: 'Reading corner', fallback: `${R}lakehouse-2.jpg`, credit: credit('Roberto Nickson', 'rEJxpBskj3Q') },
+      { id: '1593714604578-d9e41b00c6c6', alt: 'White and brown modern building next to a swimming pool', caption: 'Pool court', fallback: `${R}lakehouse-3.jpg`, credit: credit('Mikail McVerry', 'GSL3IuuwJv8') },
     ],
-    gallery: [
-      { src: `${R}lakehouse-1.jpg`, alt: 'Concept render of Lakehouse Verena, a long glazed pavilion with a floating roof beside water', caption: 'Concept render — from the lake' },
-      { src: `${R}lakehouse-2.jpg`, alt: 'Concept render of the Lakehouse deck and jetty extending over the water', caption: 'Concept render — the jetty' },
-      { src: `${R}lakehouse-3.jpg`, alt: 'Concept render of Lakehouse Verena at dusk with a warm glow behind the glazing', caption: 'Concept render — dusk' },
+    floorPlan: { src: '', note: 'Single level — indicative schematic', kind: 'waterfront' },
+    accent: '#D9B26B',
+    verified: false,
+  },
+  {
+    id: 'garden-house',
+    name: 'The Garden House',
+    location: 'Linden Park',
+    descriptor: 'Clean white planes set into a mature garden.',
+    type: 'Family residence',
+    description: [
+      'The Garden House is a composition of white planes and timber screens. The ground floor opens on three sides to a mature, walled garden.',
+      'Upstairs, five bedrooms share a long gallery lit from above.',
     ],
-    poster: `${R}lakehouse-1.jpg`,
-    floorPlan: { src: '', note: 'Single level — indicative schematic' },
-    model: { procedural: 'waterfront' },
+    bedrooms: 5,
+    bathrooms: 5,
+    interiorAreaM2: 560,
+    outdoorAreaM2: 2100,
+    outdoorAreaLabel: 'Plot',
+    priceLabel: 'Price on application',
+    amenities: ['Walled garden', 'Kitchen opening to the lawn', 'Top-lit gallery', 'Play room', 'Staff apartment', 'Three-car garage'],
+    photos: [
+      { id: '1600596542815-ffad4c1539a9', alt: 'White modern house under a blue sky', caption: 'Garden facade', fallback: `${R}villa-2.jpg`, credit: credit('Frames For Your Heart', 'mR1CIDduGLc') },
+      { id: '1580587771525-78b9dba3b914', alt: 'White and brown modern house with a lawn under a blue sky', caption: 'Approach', fallback: `${R}story-exterior.jpg`, credit: credit('Ярослав Алексеенко', '_TPTXZd9mOo') },
+      { id: '1583847268964-b28dc8f51f92', alt: 'A living room with furniture and a large window', caption: 'Living room', fallback: `${R}story-living.jpg`, credit: credit('Minh Pham', 'OtXADkUh3-I') },
+    ],
+    floorPlan: { src: '', note: 'Ground floor — indicative schematic', kind: 'villa' },
+    accent: '#B9C29A',
+    verified: false,
+  },
+  {
+    id: 'cedar-frame',
+    name: 'Cedar Frame',
+    location: 'Northwood',
+    descriptor: 'A timber A-frame retreat with a wall of glass.',
+    type: 'Retreat',
+    description: [
+      'Cedar Frame is a compact retreat under a steep timber roof. The gable end is fully glazed, framing the forest from the double-height living room.',
+      'A mezzanine bedroom looks down into the living space; a wood-fired sauna sits a short walk away.',
+    ],
+    bedrooms: 3,
+    bathrooms: 3,
+    interiorAreaM2: 240,
+    outdoorAreaM2: 5200,
+    outdoorAreaLabel: 'Woodland plot',
+    priceLabel: 'Price on application',
+    amenities: ['Double-height glazed gable', 'Mezzanine suite', 'Wood-burning stove', 'Forest sauna', 'Covered deck', 'Walking trails'],
+    photos: [
+      { id: '1768578927091-2f02d499ac61', alt: 'Modern A-frame house with large windows and wooden accents', caption: 'The gable', fallback: `${R}lakehouse-2.jpg`, credit: credit('Caroline Badran', 'u_w2ts7Gpgk') },
+      { id: '1758565811272-e79917ca0adc', alt: 'Modern dining room with large windows and a scenic view', caption: 'Dining', fallback: `${R}story-living.jpg`, credit: credit('Caroline Badran', 'n2lSnn0tVKk') },
+      { id: '1774311237295-a65a4c1ff38a', alt: 'Modern living space with a large window overlooking nature', caption: 'Living', fallback: `${R}story-terrace.jpg`, credit: credit('Clay Banks', 'b6Bs19onFtY') },
+    ],
+    floorPlan: { src: '', note: 'Main level — indicative schematic', kind: 'waterfront' },
+    accent: '#C08A5B',
     verified: false,
   },
 ];
 
-/** Which residence is centred when the collection first loads (the middle one shows both neighbours). */
-export const initialResidenceIndex = 1;
+/** Which residence is centred when the gallery first loads. */
+export const initialResidenceIndex = 2;
 
 export const hero = {
   headline: 'Exceptional spaces. Extraordinary living.',
-  intro: 'A private collection of contemporary villas, penthouses and waterfront residences, presented by appointment.',
-  poster: `${R}hero.jpg`,
-  posterAlt: 'Concept render of a contemporary stone villa with a cantilevered upper floor in low evening sun',
-  /** Shown while the WebGL collection initialises; matches the scene's opening camera. */
-  collectionPoster: `${R}collection-poster.jpg`,
+  intro: 'A private collection of contemporary villas and waterfront residences, presented by appointment.',
+  /** Seconds each slide stays before the next house is revealed. */
+  slideSeconds: 6,
 };
 
 export interface StoryScene {
   id: string;
   label: string;
   statement: string;
-  image: string;
-  alt: string;
-  /** Optional approved video clip (mp4/webm). Plays muted, never autoplays with sound. */
+  photo: Photo;
   video?: string;
 }
 
 export const story: StoryScene[] = [
-  { id: 'arrival', label: 'Arrival', statement: 'The approach is quiet: stone underfoot, olive trees, and the house revealed slowly.', image: `${R}story-arrival.jpg`, alt: 'Concept render of a stone path approaching a contemporary villa between olive trees' },
-  { id: 'exterior', label: 'Exterior', statement: 'Heavy stone below, light above. The architecture is legible from a distance.', image: `${R}story-exterior.jpg`, alt: 'Concept render of a villa exterior in warm evening light' },
-  { id: 'living', label: 'Living', statement: 'Inside, the walls step back and the landscape becomes the room.', image: `${R}story-living.jpg`, alt: 'Concept render of a minimal living room with full-height glazing and sunlight on a stone floor' },
-  { id: 'terrace', label: 'Terrace', statement: 'Evenings belong to the terrace, the water, and the long view west.', image: `${R}story-terrace.jpg`, alt: 'Concept render of a pool terrace looking out over a calm landscape' },
+  { id: 'arrival', label: 'Arrival', statement: 'The approach is quiet. The house reveals itself slowly, across the lawn.', photo: { id: '1783125127199-860da9744dcc', alt: 'A modern house with a swimming pool and a green lawn', fallback: `${R}story-arrival.jpg`, credit: credit('Salvo Media LLC', 'ylzGfY-xzBY') } },
+  { id: 'exterior', label: 'Exterior', statement: 'As the light fades, the architecture turns into a lantern.', photo: { id: '1757524492552-d47a66a2b63e', alt: 'Modern house with large windows at dusk', fallback: `${R}story-exterior.jpg`, credit: credit('Michael Brown', 'cUoXTLVFQ9M') } },
+  { id: 'living', label: 'Living', statement: 'Inside, the walls step back and the landscape becomes the room.', photo: { id: '1773578978637-c9771e7a9913', alt: 'Modern dining and living area with large windows', fallback: `${R}story-living.jpg`, credit: credit('Clay Banks', 'y8j0gmhtS-4') } },
+  { id: 'terrace', label: 'Terrace', statement: 'Evenings belong to the terrace, the water and the long view.', photo: { id: '1781795414968-8ece31826420', alt: 'Modern luxury house with a swimming pool and lush green landscape', fallback: `${R}story-terrace.jpg`, credit: credit('Maverick Frame', '7s8ab4twHcI') } },
 ];
 
 export const lifestyle = [
@@ -196,29 +202,29 @@ export const lifestyle = [
     id: 'water',
     eyebrow: 'Lifestyle',
     title: 'Measured by light, water and quiet.',
-    body: 'Each residence in the collection is chosen for its relationship to the landscape — the orientation of its terraces, the privacy of its approach, and the calm of its setting.',
-    image: `${R}lifestyle-water.jpg`,
-    alt: 'Concept render of a timber jetty extending over still water at sunset',
+    body: 'Each residence is chosen for its relationship to the landscape — the orientation of its terraces, the privacy of its approach, and the calm of its setting.',
+    photo: { id: '1544984243-ec57ea16fe25', alt: 'Still water beside a house at golden hour', fallback: `${R}lifestyle-water.jpg`, credit: credit('Roberto Nickson', 'so3wgJLwDxo') } as Photo,
   },
   {
     id: 'terraces',
     eyebrow: 'Outdoor living',
     title: 'Terraces designed as rooms.',
     body: 'Shade, planting and stone are treated with the same care as the interiors, so outdoor space is usable through the day and across the seasons.',
-    image: `${R}lifestyle-terrace.jpg`,
-    alt: 'Concept render of a high terrace with planters and a bronze pergola',
+    photo: { id: '1706808849780-7a04fbac83ef', alt: 'A modern house with a pool and sun loungers', fallback: `${R}lifestyle-terrace.jpg`, credit: credit('Salman Saqib', 'WaC-JFfF21M') } as Photo,
   },
 ];
 
 export const locations = {
-  title: 'Three settings, one standard.',
-  body: 'The collection spans a hillside, a harbour and a lakeshore. Locations shown here are fictional demonstration places; detailed location information is shared at a private viewing.',
-  /** Leave empty to show the abstract placeholder map. Add an embed URL once a mapping provider is chosen. */
+  title: 'Five settings, one standard.',
+  body: 'The collection spans a coastline, a ridge, a lakeshore, a city park and a forest. All locations shown are fictional demonstration places; detailed location information is shared at a private viewing.',
+  /** Leave empty to show the abstract placeholder map. */
   mapEmbedUrl: '',
   places: [
-    { residenceId: 'villa-solenne', setting: 'Hillside', note: 'South-west facing slope, terraced olive groves.' },
-    { residenceId: 'meridian-penthouse', setting: 'Harbour', note: 'Upper floors of a residential tower in the harbour quarter.' },
-    { residenceId: 'lakehouse-verena', setting: 'Lakeshore', note: 'Private shoreline with direct water access.' },
+    { residenceId: 'villa-solenne', setting: 'Coast', note: 'South-facing garden plot above the shoreline.', xy: [95, 250] as [number, number] },
+    { residenceId: 'casa-noctis', setting: 'Ridge', note: 'Elevated plot with long evening views.', xy: [210, 95] as [number, number] },
+    { residenceId: 'lakehouse-verena', setting: 'Lakeshore', note: 'Private shoreline with direct water access.', xy: [420, 120] as [number, number] },
+    { residenceId: 'garden-house', setting: 'Park', note: 'Walled garden plot beside a city park.', xy: [300, 205] as [number, number] },
+    { residenceId: 'cedar-frame', setting: 'Forest', note: 'Woodland plot at the end of a private track.', xy: [470, 260] as [number, number] },
   ],
 };
 
@@ -226,10 +232,8 @@ export const enquiry = {
   /**
    * POST endpoint that receives the viewing request as JSON.
    * Leave empty to run the form in clearly labelled demo mode (nothing is sent).
-   * Example: 'https://formspree.io/f/xxxxxxx' or your own API route.
    */
   endpoint: '',
-  /** Minimum days from today a viewing can be requested. */
   minLeadDays: 2,
 };
 
@@ -239,5 +243,4 @@ export const brand = {
   contactNote: 'Private viewings are arranged by appointment only.',
 };
 
-/** Square feet helper so only m² needs editing. */
 export const m2ToSqft = (m2: number) => Math.round(m2 * 10.7639);

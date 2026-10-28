@@ -10,8 +10,8 @@ async function run(name, viewport, opts = {}) {
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`[${name}] ${m.text()}`); });
   page.on('pageerror', (e) => errors.push(`[${name}] PAGEERROR ${e.message}`));
   if (opts.noWebgl) await page.addInitScript(() => { HTMLCanvasElement.prototype.getContext = function () { return null; }; });
-  await page.goto(url, { waitUntil: 'networkidle' });
-  await page.screenshot({ path: `${out}/${name}-1-hero.png` });
+  await page.goto(url, { waitUntil: 'load' });
+  await page.waitForTimeout(2500); await page.screenshot({ path: `${out}/${name}-1-hero.png` });
   await page.evaluate(() => document.getElementById('collection').scrollIntoView());
   await page.waitForTimeout(4000);
   await page.screenshot({ path: `${out}/${name}-2-collection.png` });
@@ -27,18 +27,19 @@ if (mode === 'all' || mode === 'desktop') await run('desktop', { width: 1440, he
     await page.screenshot({ path: `${out}/${name}-4-detail.png` });
     const focused = await page.evaluate(() => document.activeElement?.id || document.activeElement?.textContent);
     console.log('focus after explore:', focused);
-    await page.click('.showroom__panel .back-btn'); await page.waitForTimeout(1600);
+    await page.waitForTimeout(300); await page.screenshot({ path: `${out}/${name}-4c-detail-late.png` });
+    await page.click('.gal__panel .back-btn'); await page.waitForTimeout(1600);
     await page.screenshot({ path: `${out}/${name}-5-back.png` });
-    console.log('selected after back:', await page.textContent('.showroom__name'));
+    console.log('selected after back:', await page.getAttribute('.gal__name','aria-label'));
     // keyboard
-    await page.focus('.showroom__stage'); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(1300);
-    console.log('after ArrowLeft:', await page.textContent('.showroom__name'));
+    await page.focus('.gal__stage'); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(1300);
+    console.log('after ArrowLeft:', await page.getAttribute('.gal__name','aria-label'));
     // drag
-    const box = await page.locator('.showroom__stage').boundingBox();
+    const box = await page.locator('.gal__stage').boundingBox();
     await page.mouse.move(box.x + box.width * 0.6, box.y + box.height / 2); await page.mouse.down();
     for (let i = 1; i <= 10; i++) await page.mouse.move(box.x + box.width * 0.6 - i * 50, box.y + box.height / 2);
     await page.mouse.up(); await page.waitForTimeout(1400);
-    console.log('after drag left:', await page.textContent('.showroom__name'));
+    console.log('after drag left:', await page.getAttribute('.gal__name','aria-label'));
     await page.screenshot({ path: `${out}/${name}-6-drag.png` });
     for (const id of ['residence', 'story', 'lifestyle', 'location', 'enquire']) {
       await page.evaluate((i) => document.getElementById(i).scrollIntoView(), id); await page.waitForTimeout(900);
@@ -64,7 +65,7 @@ if (mode === 'all' || mode === 'desktop') await run('desktop', { width: 1440, he
 if (mode === 'all' || mode === 'mobile') await run('mobile', { width: 390, height: 844 }, { touch: true, after: async (page, name) => {
   await page.getByRole('button', { name: 'Explore Residence', exact: true }).click(); await page.waitForTimeout(2200);
   await page.screenshot({ path: `${out}/${name}-4-detail.png`, fullPage: false });
-  await page.evaluate(() => document.querySelector('.showroom__panel').scrollIntoView({block:'center'})); await page.waitForTimeout(500);
+  await page.evaluate(() => document.querySelector('.gal__panel').scrollIntoView({block:'center'})); await page.waitForTimeout(500);
   await page.screenshot({ path: `${out}/${name}-4b-panel.png` });
   for (const id of ['residence', 'story', 'location', 'enquire']) {
     await page.evaluate((i) => document.getElementById(i).scrollIntoView(), id); await page.waitForTimeout(900);
